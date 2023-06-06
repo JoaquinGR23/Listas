@@ -1,0 +1,118 @@
+program p5p10;
+type
+  str30=string[30];
+  infoCamion = record
+    patente:integer;
+    FechaFabricacion:integer;
+    Capacidad:real;
+  end;
+camiones = array [1..100] of infoCamion; //la lista con la informacion que la empresa proporciono
+  viajes = record
+    CodigoViaje:integer;
+    CodigoCamion:1..100;
+    KM:integer;
+    Destino:str30;
+    Year:integer;
+    DNI:integer;
+  end;
+lista = ^nodo;
+nodo = record
+  dato:viajes;
+  sig:lista;
+end;
+{} procedure LeerViaje(var C:viajes);
+begin
+    write ('Inserte el codigo del viaje: ');
+     read(C.CodigoViaje);
+    if (C.CodigoViaje <> -1) then begin
+        write ('Inserte el codigo del camion: ');
+         readln(C.CodigoCamion);
+        write ('Inserte la cantidad de KM recorridos: ');
+         readln(C.KM);
+        write ('Escriba la ciudad de destino: ');
+         readln(C.destino);
+        write ('Escriba el año en el que se realizo el viaje: ');
+         readln(C.Year);
+        write ('Inserte el DNI del chofer: ');
+         readln(C.DNI);
+    end;
+end;
+
+{} procedure AgregarAdelante(var L:lista;C:viajes);
+var nuevo:lista;
+begin
+    new(nuevo);
+    nuevo^.dato:=C;
+    nuevo^.sig:=L;
+    L:=nuevo;
+end;
+
+{} procedure CargarLista(var L:lista);
+var C:viajes;
+begin
+    LeerViaje(C);
+    while (C.CodigoViaje <> -1) do begin
+        AgregarAdelante(L,C);
+        LeerViaje(C);
+    end;
+end;
+
+{} procedure CalcularMaxMin(KM:integer;patente:integer; var patMax,PatMin,max,min:integer);
+begin
+    if (KM>max) then begin
+        max:=KM;
+        PatMax:=patente;
+    end;
+    if (KM<min) then begin
+        min:=KM;
+        PatMin:=patente;
+    end;
+end;
+{} Function DNIsinPares(DNI:integer):boolean;
+var 
+ digito:integer;
+ encontro: boolean;
+begin
+    encontro:= true;
+    while (DNI <> 0) do begin
+        digito:=DNI mod 10;;
+        if(digito mod 2= 0) then encontro:= false;
+        DNI:=DNI div 10;
+    end;
+    DNIsinPares:= encontro;
+end;
+
+{} procedure RecorrerLista(V:camiones;L:lista;Var PatMax,PatMin:integer; var CantViajes,CantDNInoPar:integer);
+var max,min:integer;
+begin
+    max:=0;
+    min:=999;
+    CantViajes:=0;
+    CantDNInoPar:=0;
+    while (L<>nil) do begin
+        CalcularMaxMin(L^.dato.KM,camiones[L^.dato.CodigoCamion].patente,PatMax,PatMin,max,min);
+        if (camiones[L^.dato.CodigoCamion].Capacidad > 30.5) then begin
+            if ((L^.dato.Year - camiones[L^.dato.CodigoCamion].FechaFabricacion)>5) then 
+                CantViajes:=CantViajes+1;
+        if (DNIsinPares(L^.dato.DNI)) then
+            CantDNInoPar:=CantDNInoPar+1;
+        end;
+        L:=L^.sig;
+    end;
+end;
+
+var
+L:lista;
+V:camiones
+PatMin,CantViajes,CantDNInoPar,PatMax:integer;
+begin
+    l:=nil;
+    CargarVector(V); //aqui se ingresaria la informacion que proporciono la empresa 
+    PatMax:=0;
+    patmin:=0;
+    CargarLista(L);
+    RecorrerLista(V,L,PatMax,patmin,CantViajes,CantDNInoPar);
+    writeln ('la patente del camion que recorrio menos km es: ',patmin,' y la del que recorrio mas es: ',PatMax);;
+    Writeln ('la cantidad de viajes por camiones que tienen mas de 30,5T de capacidad y +5 años de antiguedad es de :',CantViajes);
+    Writeln ('la cantidad de viajes realizados por conductores sin numeros pares en su DNI es de: ',CantDNInoPar);
+end.
