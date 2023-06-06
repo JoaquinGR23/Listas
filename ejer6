@@ -1,0 +1,170 @@
+program ejer6; 
+const
+  df= 7;
+sub = 1..7;
+str80 = string[80];
+vector = array[1..df] of interger;
+
+objeto = record
+  cod, dist, anio: integer;
+  nomObj, nomD: str80;
+  cat: sub;
+lista = ^nodo
+
+nodo = record
+  dato: objeto;
+  sig: lista;
+end;
+
+lista2 = ^nodo2
+nodo2 = record
+  dato2: string
+  sig:lista2;
+end;
+
+procedure inicioVec(var vec: vector);
+var 
+  j: integer;
+begin
+  for j:=1 to df do
+  begin
+    v[j]:=0;
+  end;
+end;
+
+procedure agregarAtras(var pI, pU:lista,p: objeto);
+var
+  nuevo:lista;
+begin
+  new(nuevo); nuevo^.dato:= p; nuevo^.sig:= nil;
+  if(l = nil) then 
+  begin
+    pI:= nuevo;
+    pU:= nuevo;
+  end
+  else begin
+    pU^.sig:= nuevo;
+    pU:= nuevo;
+  end;
+end;
+
+procedure LeerDato(var r: objeto;var cod:integer, var vec:vector);
+var
+  categoria: sub;
+begin
+  write ('Inserte el codigo del objeto: ');
+     read(cod);
+    if (cod <> -1) then begin
+        r.cod:= cod;
+        write ('Inserte el nombre del objeto: ');
+         readln(r.nomObj);
+        write ('Inserte la dist del objeto a la tierra: ');
+         readln(r.dist);
+        write ('Escriba el nombre del descubridor: ');
+         readln(r.nomD);
+        write ('Escriba el año de su descubrimiento: ');
+         readln(r.anio);
+        write ('Inserte la categoria del objeto: ');
+         readln(r.cat);
+         vec[r.cat]:= vec[r.cat]+1;
+end;
+procedure cargar(var L,ult: lista, var vect:vector);
+var 
+  p: objeto
+  aux: integer;
+begin
+  leerDato(p, aux, vect);
+  while (aux <> -1) do
+  begin
+    agregarAtras(L,ult,p);
+    leerDato(p, aux, vect);
+  end;
+end;
+
+procedure MaxMin(distancia,codO: integer; var m1, m2, co1, co2:integer);
+begin
+  if(distancia > m1) then
+  begin 
+    m2:= m1;
+    m1:= distancia;
+    co2:= co1;
+    co1:= codO;
+  end;
+  else
+  begin
+    if(distancia > m2) then 
+    begin
+      m2:= distancia;
+      cod2:= codO;
+    end;
+  end;
+end;
+
+procedure nomEstrellas(var l2: lista2; nomE: str80; num:integer);
+var
+ dig contP, contI: integer
+begin
+  contI:=0; contP:=0; 
+  while(num <> 0) do
+  begin
+    dig := num mod 10;
+    if(dig mod 2 = 0) then contP:= contP+1;
+    else contI:= contI+1;
+    num := num div 10;
+  end;
+  if (contP > contI) then 
+  begin 
+    new(nuevo);
+    nuevo^.dato2:= nomE;
+    nuevo^.sig:= l2;
+    l2:= nuevo; 
+  end;
+end;
+
+procedure recorrer(var L2:lista2, l:lista, var cod1, cod2: integer);
+var
+  max1, max2: integer;
+begin
+  max1:= -999;
+  while(l <> nil) do
+  begin
+    MaxMin(l^.dato.dist,l^.dato.cod,max1, max2, cod1, cod2);
+    
+    if(l^.dato.cat = 1) then nomEstrellas(L2,l^.dato.nomObj, l^.dato.cod);
+    l:=l^.sig;
+  end;
+end;
+
+procedure estrellas(e:lista2);
+begin
+  while(e <> nil) do
+  begin
+    writeln(e^.dato2);
+    e:= e^.sig;
+  end;
+  
+end;
+
+var
+  v: vector;
+  i, codigo1, codigo2: integer;
+  pri, ult:lista;
+   li2: lista2;
+begin
+pri:= nil;
+lista2:= nil;
+codigo1:=-1;
+
+inicioVec(v);
+cargar(pri,ult, v);
+recorrer(li2, pri, codigo1, codigo2);
+writenln('los codigos mas lejanos de la tierra que se hayan observado son: ', codigo1,' y ' codigo2);
+estrellas(li2);
+
+
+for i:=1 to df do
+begin
+  writeln('categoria:', i,' ', v[i]);
+end;
+
+end.
